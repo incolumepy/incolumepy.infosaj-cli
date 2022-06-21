@@ -30,12 +30,12 @@ exclude = [
 ]
 
 [tool.poetry.scripts]
-infosaj = 'incolumepy.infosaj.cli:infosaj'
+infosaj = 'incolumepy.infosaj_cli.cli:infosaj'
 
 [tool.poetry.urls]
-'Source' = 'https://github.com/incolumepy/incolumepy.infosaj'
-'Tracker' = 'https://github.com/incolumepy/incolumepy.infosaj/issues'
-'Oficial' = 'https://github.com/incolumepy/incolumepy.infosaj'
+'Source' = 'https://github.com/incolumepy/incolumepy.infosaj-cli'
+'Tracker' = 'https://github.com/incolumepy/incolumepy.infosaj-cli/issues'
+'Oficial' = 'https://github.com/incolumepy/incolumepy.infosaj-cli'
 
 [tool.poetry.dependencies]
 python = "^3.8"
