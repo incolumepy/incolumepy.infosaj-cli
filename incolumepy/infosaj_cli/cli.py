@@ -6,52 +6,49 @@ import toml
 
 from incolumepy.infosaj.infosaj import gen_infosaj, gen_model_conf
 
-# Create the parser
-my_parser = argparse.ArgumentParser(
-    prog='infosaj',
-    allow_abbrev=False,
-    add_help=True,
-    usage='%(prog)s [-h|-i|-m]',
-    description='Informativo SAJ generator',
-    epilog='Enjoy the program! :)',
-)
 
-print(Path(__file__).parents[2].joinpath("pyproject.toml"))
-print(
-    toml.load(
-        Path(__file__).parents[2].joinpath("pyproject.toml")
-    )['tool']['poetry']['version'])
-
-my_parser.version = toml.load(
-    Path(__file__).parents[2].joinpath("pyproject.toml")
-)['tool']['poetry']['version']
-
-my_parser.add_argument('-m',
-                       '--model',
-                       required=False,
-                       # action='store',
-                       action='store_true',
-                       help='generate model.yaml file')
-
-my_parser.add_argument('-i',
-                       '--infosaj',
-                       required=False,
-                       # action='store',
-                       action='store_true',
-                       help='generate infosaj.html file')
-
-
+#infosaj
 @click.group()
+@click.option('-c',
+              "--configfile",
+              prompt="Your file config name",
+              default='infosaj/model.yml',
+              help="Provide your file YAML config name")
+@click.option('-o',
+              "--outputfile",
+              default='infosaj/index.html',
+              prompt="Your file output name",
+              help="Provide your file HTML output name")
 @click.pass_context
-def infosaj(ctx):
+def infosaj(ctx, **kwargs):
+    """Generate informativo SAJ."""
     ctx.obj = {}
+    ctx.obj.update(**kwargs)
 
 
-@click.command()
-@click.argument('filename')
-def gen_model(filename):
-    gen_model_conf(filename)
+@infosaj.command()
+@click.argument('subcommand')
+@click.pass_context
+def help(ctx, subcommand):
+    """Show the help for specific command."""
+    subcommand_obj = infosaj.get_command(ctx, subcommand)
+    if subcommand_obj is None:
+        click.echo("I don't know that command.")
+    else:
+        click.echo(subcommand_obj.get_help(ctx))
 
 
-infosaj.add_command(gen_model, 'model')
-infosaj.add_command(test, 'test')
+@infosaj.command()
+@click.pass_context
+def model(ctx):
+    """Generate model config file."""
+    click.secho(f'{ctx.obj} {ctx.obj.get("configfile")}', fg='green')
+    return gen_model_conf(ctx.obj.get("configfile"))
+
+
+@infosaj.command(name='gen')
+@click.pass_context
+def generator(ctx):
+    """Generate infosaj HTML file."""
+    click.secho(f'{ctx.obj} {ctx.obj.get("configfile")}', fg='green')
+    return gen_infosaj(ctx.obj.get("outputfile"))
